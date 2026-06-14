@@ -1,16 +1,20 @@
 package com.jobsearch.mcpserver;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jobsearch.mcpserver.plugins.AmazonJobSearchService;
+import com.jobsearch.mcpserver.plugins.JobListing;
 import com.jobsearch.mcpserver.protocol.JsonRpcRequest;
 import com.jobsearch.mcpserver.protocol.JsonRpcResponse;
 
 import io.javalin.Javalin;
 import io.javalin.http.sse.SseClient;
 
+import java.util.List;
 import java.util.UUID;
 
 import com.jobsearch.mcpserver.transport.McpRouter;
 import com.jobsearch.mcpserver.transport.SessionStore;
+import com.jobsearch.mcpserver.util.AmazonJobSearchUrlBuilder;
 
 public class McpServer {
     public static void main(String[] args) throws Exception {
@@ -73,6 +77,42 @@ public class McpServer {
             ctx.status(isNotification ? 202 : 200); // 202 Accepted for notifications, 200 OK for regular requests
         });
 
-        app.start(8080);
+        //app.start(8080);
+
+        // 1. Generate the exact default URL you provided
+        AmazonJobSearchUrlBuilder defaultSearch = new AmazonJobSearchUrlBuilder();
+        System.out.println("Default URL:");
+        System.out.println(defaultSearch.build());
+        System.out.println();
+
+        // 2. Generate a custom URL modifying only a few parameters (e.g., pagination or role)
+        String customUrl = new AmazonJobSearchUrlBuilder()
+                .withBaseQuery("Senior Software Engineer")
+                .withOffset(25) // Next page
+                .withResultLimit(50)
+                .build();
+
+        System.out.println("Customized URL:");
+        System.out.println(customUrl);
+
+
+        AmazonJobSearchService service = new AmazonJobSearchService();
+        
+        System.out.println("Initiating HTTP connection context to Amazon Jobs API platform...");
+        List<JobListing> activeJobs = service.fetchSeattleSoftwareManagerJobs();
+        
+        System.out.println("\n--- Discovery Processing Loop Finished ---");
+        System.out.println("Total mapped domain instances loaded: " + activeJobs.size());
+        System.out.println("------------------------------------------");
+        
+        // Output clean structured results extracted straight from the target JSON payload arrays
+        activeJobs.stream().limit(3).forEach(job -> {
+            System.out.println("Role Title : " + job.getTitle());
+            System.out.println("Company    : " + job.getCompany());
+            System.out.println("Location   : " + job.getLocation());
+            System.out.println("Direct link: " + job.getUrl());
+            System.out.println("Source Node: " + job.getSource());
+            System.out.println();
+        });
     }
 }
