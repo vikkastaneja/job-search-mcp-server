@@ -5,6 +5,7 @@ import com.jobsearch.mcpserver.plugins.AmazonJobSearchService;
 import com.jobsearch.mcpserver.plugins.JobListing;
 import com.jobsearch.mcpserver.protocol.JsonRpcRequest;
 import com.jobsearch.mcpserver.protocol.JsonRpcResponse;
+import com.jobsearch.mcpserver.tools.SearchJobsTool;
 
 import io.javalin.Javalin;
 import io.javalin.http.sse.SseClient;
@@ -95,18 +96,8 @@ public class McpServer {
         System.out.println("Customized URL:");
         System.out.println(customUrl);
 
-
-        AmazonJobSearchService service = new AmazonJobSearchService();
-        
-        System.out.println("Initiating HTTP connection context to Amazon Jobs API platform...");
-        List<JobListing> activeJobs = service.fetchSeattleSoftwareManagerJobs();
-        
-        System.out.println("\n--- Discovery Processing Loop Finished ---");
-        System.out.println("Total mapped domain instances loaded: " + activeJobs.size());
-        System.out.println("------------------------------------------");
-        
-        // Output clean structured results extracted straight from the target JSON payload arrays
-        activeJobs.stream().limit(3).forEach(job -> {
+        List<JobListing> jobListings = SearchJobsTool.execute("Product Manager");
+        jobListings.forEach(job -> {
             System.out.println("Role Title : " + job.getTitle());
             System.out.println("Company    : " + job.getCompany());
             System.out.println("Location   : " + job.getLocation());
@@ -114,5 +105,25 @@ public class McpServer {
             System.out.println("Source Node: " + job.getSource());
             System.out.println();
         });
+        // AmazonJobSearchService service = new AmazonJobSearchService();
+        
+        // System.out.println("Initiating HTTP connection context to Amazon Jobs API platform...");
+        // List<JobListing> activeJobs = service.fetchSeattleSoftwareManagerJobs();
+        
+        // System.out.println("\n--- Discovery Processing Loop Finished ---");
+        // System.out.println("Total mapped domain instances loaded: " + activeJobs.size());
+        // System.out.println("------------------------------------------");
+        
+        // // Output clean structured results extracted straight from the target JSON payload arrays
+        // activeJobs.stream().limit(3).forEach(job -> {
+        //     System.out.println("Role Title : " + job.getTitle());
+        //     System.out.println("Company    : " + job.getCompany());
+        //     System.out.println("Location   : " + job.getLocation());
+        //     System.out.println("Direct link: " + job.getUrl());
+        //     System.out.println("Source Node: " + job.getSource());
+        //     System.out.println();
+        // });
+
+        SearchJobsTool.execute("software engineer");
     }
 }
