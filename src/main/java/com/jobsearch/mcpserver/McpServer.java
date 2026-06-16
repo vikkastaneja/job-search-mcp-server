@@ -40,7 +40,7 @@ public class McpServer {
         System.out.println(mapper.writeValueAsString(resp));
 
         Javalin app = Javalin.create();
-
+        app.before(ctx -> System.out.println("Incoming: " + ctx.method() + " " + ctx.path()));
         // GET /sse endpoint for SSE connections
         app.sse("/sse", client -> {
             System.out.println("New SSE client connected");
@@ -78,33 +78,33 @@ public class McpServer {
             ctx.status(isNotification ? 202 : 200); // 202 Accepted for notifications, 200 OK for regular requests
         });
 
-        //app.start(8080);
+        app.start(8080);
 
         // 1. Generate the exact default URL you provided
-        AmazonJobSearchUrlBuilder defaultSearch = new AmazonJobSearchUrlBuilder();
-        System.out.println("Default URL:");
-        System.out.println(defaultSearch.build());
-        System.out.println();
+        // AmazonJobSearchUrlBuilder defaultSearch = new AmazonJobSearchUrlBuilder();
+        // System.out.println("Default URL:");
+        // System.out.println(defaultSearch.build());
+        // System.out.println();
 
-        // 2. Generate a custom URL modifying only a few parameters (e.g., pagination or role)
-        String customUrl = new AmazonJobSearchUrlBuilder()
-                .withBaseQuery("Senior Software Engineer")
-                .withOffset(25) // Next page
-                .withResultLimit(50)
-                .build();
+        // // 2. Generate a custom URL modifying only a few parameters (e.g., pagination or role)
+        // String customUrl = new AmazonJobSearchUrlBuilder()
+        //         .withBaseQuery("Senior Software Engineer")
+        //         .withOffset(25) // Next page
+        //         .withResultLimit(50)
+        //         .build();
 
-        System.out.println("Customized URL:");
-        System.out.println(customUrl);
+        // System.out.println("Customized URL:");
+        // System.out.println(customUrl);
 
-        List<JobListing> jobListings = SearchJobsTool.execute("Product Manager");
-        jobListings.forEach(job -> {
-            System.out.println("Role Title : " + job.getTitle());
-            System.out.println("Company    : " + job.getCompany());
-            System.out.println("Location   : " + job.getLocation());
-            System.out.println("Direct link: " + job.getUrl());
-            System.out.println("Source Node: " + job.getSource());
-            System.out.println();
-        });
+        // List<JobListing> jobListings = SearchJobsTool.execute("Product Manager");
+        // jobListings.forEach(job -> {
+        //     System.out.println("Role Title : " + job.getTitle());
+        //     System.out.println("Company    : " + job.getCompany());
+        //     System.out.println("Location   : " + job.getLocation());
+        //     System.out.println("Direct link: " + job.getUrl());
+        //     System.out.println("Source Node: " + job.getSource());
+        //     System.out.println();
+        // });
         // AmazonJobSearchService service = new AmazonJobSearchService();
         
         // System.out.println("Initiating HTTP connection context to Amazon Jobs API platform...");

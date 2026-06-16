@@ -3,6 +3,7 @@ package com.jobsearch.mcpserver.transport;
 import com.jobsearch.mcpserver.handlers.BaseHandler;
 import com.jobsearch.mcpserver.handlers.ErrorHandler;
 import com.jobsearch.mcpserver.handlers.InitializeHandler;
+import com.jobsearch.mcpserver.handlers.SearchJobsHandler;
 import com.jobsearch.mcpserver.handlers.ToolsListHandler;
 import com.jobsearch.mcpserver.protocol.JsonRpcRequest;
 import com.jobsearch.mcpserver.util.JsonUtil;
@@ -27,6 +28,10 @@ public class McpRouter {
             case "notifications/initialized":
                 // Handle notifications/initialized if needed
                 isNotification = true;
+                break;
+            case "tools/call":
+                handler = new SearchJobsHandler();
+                handler.handle(request, client);
                 break;
             default:
                 System.out.println("Unknown method: " + request.getMethod());
