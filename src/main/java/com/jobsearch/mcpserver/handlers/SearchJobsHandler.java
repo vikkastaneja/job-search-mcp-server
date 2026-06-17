@@ -18,6 +18,12 @@ public class SearchJobsHandler extends BaseHandler {
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final JsonFactory FACTORY = new JsonFactory(MAPPER);
 
+    private final SearchJobsTool searchJobsTool;
+
+    public SearchJobsHandler(SearchJobsTool searchJobsTool) {
+        this.searchJobsTool = searchJobsTool;
+    }
+
     @Override
     public void handle(JsonRpcRequest request, SseClient client) {
         
@@ -62,7 +68,7 @@ public class SearchJobsHandler extends BaseHandler {
 
         // In a real implementation, you would trigger the tool execution flow here
         // For example:
-        List<JobListing> jobListings = SearchJobsTool.execute(query);
+        List<JobListing> jobListings = searchJobsTool.execute(query);
         System.out.println("Found " + jobListings.size() + " job listings for query: " + query);
         for (JobListing job : jobListings) {
             System.out.println("Job: " + job.getTitle() + " at " + job.getCompany());

@@ -11,7 +11,13 @@ import com.jobsearch.mcpserver.util.JsonUtil;
 import io.javalin.http.sse.SseClient;
 
 public class McpRouter {
-    public static boolean route(String sessionId, String body, SseClient client) {
+
+    private final SearchJobsHandler searchJobsHandler;
+    public McpRouter(SearchJobsHandler searchJobsHandler) {
+        this.searchJobsHandler = searchJobsHandler;
+    }
+
+    public boolean route(String sessionId, String body, SseClient client) {
         JsonRpcRequest request = JsonUtil.fromJson(body, JsonRpcRequest.class);
         System.out.println("Received request: " + request.getMethod() + " with params: " + request.getParams());
         BaseHandler handler = null;
@@ -30,7 +36,7 @@ public class McpRouter {
                 isNotification = true;
                 break;
             case "tools/call":
-                handler = new SearchJobsHandler();
+                handler = searchJobsHandler;
                 handler.handle(request, client);
                 break;
             default:

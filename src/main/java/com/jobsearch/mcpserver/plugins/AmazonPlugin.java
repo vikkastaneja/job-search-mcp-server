@@ -14,11 +14,19 @@ import com.jobsearch.mcpserver.util.AmazonJobSearchUrlBuilder;
 
 public class AmazonPlugin implements JobPlugin {
 
-    private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()
+    private final HttpClient httpClient;
+
+    public AmazonPlugin(HttpClient httpClient) {
+        this.httpClient = httpClient;
+    }
+
+    public AmazonPlugin() {
+        this(HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(10))
             .followRedirects(HttpClient.Redirect.NORMAL)
-            .build();
-
+            .build());
+    }
+    
     @Override
     public List<JobListing> search(String query) throws Exception {
         // Implement the logic to search for jobs on Amazon's job portal
@@ -40,7 +48,7 @@ public class AmazonPlugin implements JobPlugin {
 
         try {
             // 3. Dispatch the synchronized blocking request network call payload thread 
-            HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response = this.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
             // Check if the server responded with an OK status (HTTP 200)
             if (response.statusCode() == 200) {
