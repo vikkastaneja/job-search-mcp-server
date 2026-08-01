@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.jobsearch.mcpserver.util.AmazonJobParserTest
 -------------------------------------------------------------------------------
-Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.095 s -- in com.jobsearch.mcpserver.util.AmazonJobParserTest
+Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.099 s -- in com.jobsearch.mcpserver.util.AmazonJobParserTest
