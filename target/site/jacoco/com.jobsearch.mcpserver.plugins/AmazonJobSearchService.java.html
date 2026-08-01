@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AmazonJobSearchService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">job-search-mcp-server</a> &gt; <a href="index.source.html" class="el_package">com.jobsearch.mcpserver.plugins</a> &gt; <span class="el_source">AmazonJobSearchService.java</span></div><h1>AmazonJobSearchService.java</h1><pre class="source lang-java linenums">package com.jobsearch.mcpserver.plugins;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+import java.util.Collections;
+import java.util.List;
+
+import com.jobsearch.mcpserver.util.AmazonJobParser;
+import com.jobsearch.mcpserver.util.AmazonJobSearchUrlBuilder;
+
+<span class="nc" id="L15">public class AmazonJobSearchService {</span>
+
+    // Shared thread-safe HttpClient optimized with explicit connection configuration settings
+<span class="nc" id="L18">    private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()</span>
+<span class="nc" id="L19">            .connectTimeout(Duration.ofSeconds(10))</span>
+<span class="nc" id="L20">            .followRedirects(HttpClient.Redirect.NORMAL)</span>
+<span class="nc" id="L21">            .build();</span>
+
+    /**
+     * Executes the lifecycle: Assembles target parameters, connects over the network,
+     * pulls down the JSON string, and processes it into mapped entity domain models.
+     */
+    public List&lt;JobListing&gt; fetchSeattleSoftwareManagerJobs() {
+        
+        // 1. Instantiate and build the target resource locator string using your Builder class
+        // Defaults automatically target Greater Seattle Area + Software Development Manager
+<span class="nc" id="L31">        URI requestUri = new AmazonJobSearchUrlBuilder().buildURI();</span>
+
+        // 2. Formulate the explicit immutable request object structure
+<span class="nc" id="L34">        HttpRequest request = HttpRequest.newBuilder()</span>
+<span class="nc" id="L35">                .uri(requestUri)</span>
+<span class="nc" id="L36">                .timeout(Duration.ofSeconds(60))</span>
+<span class="nc" id="L37">                .header(&quot;Accept&quot;, &quot;application/json&quot;)</span>
+                // Adding a realistic User-Agent prevents edge proxies from instantly treating automation as a bad bot
+<span class="nc" id="L39">                .header(&quot;User-Agent&quot;, &quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) Java-HttpClient/11&quot;)</span>
+<span class="nc" id="L40">                .GET()</span>
+<span class="nc" id="L41">                .build();</span>
+
+        try {
+            // 3. Dispatch the synchronized blocking request network call payload thread 
+<span class="nc" id="L45">            HttpResponse&lt;String&gt; response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());</span>
+
+            // Check if the server responded with an OK status (HTTP 200)
+<span class="nc bnc" id="L48" title="All 2 branches missed.">            if (response.statusCode() == 200) {</span>
+<span class="nc" id="L49">                String rawJsonBody = response.body();</span>
+                
+                // 4. Pass the validated payload directly into the parsing engine class layer
+<span class="nc" id="L52">                return AmazonJobParser.parse(rawJsonBody);</span>
+            } else {
+<span class="nc" id="L54">                System.err.println(&quot;API request failed. HTTP Status Code: &quot; + response.statusCode());</span>
+<span class="nc" id="L55">                System.err.println(&quot;Response Payload: &quot; + response.body());</span>
+            }
+
+<span class="nc" id="L58">        } catch (IOException e) {</span>
+<span class="nc" id="L59">            System.err.println(&quot;Network I/O layer failure or transmission disruption occurred: &quot; + e.getMessage());</span>
+<span class="nc" id="L60">        } catch (InterruptedException e) {</span>
+<span class="nc" id="L61">            System.err.println(&quot;Network thread execution context was prematurely halted: &quot; + e.getMessage());</span>
+<span class="nc" id="L62">            Thread.currentThread().interrupt(); // Restore interrupted status state handler flag</span>
+<span class="nc" id="L63">        }</span>
+
+<span class="nc" id="L65">        return Collections.emptyList();</span>
+    }
+
+    // Direct entry execution verification route 
+    // public static void main(String[] args) {
+        // AmazonJobSearchService service = new AmazonJobSearchService();
+        
+        // System.out.println(&quot;Initiating HTTP connection context to Amazon Jobs API platform...&quot;);
+        // List&lt;JobListing&gt; activeJobs = service.fetchSeattleSoftwareManagerJobs();
+        
+        // System.out.println(&quot;\n--- Discovery Processing Loop Finished ---&quot;);
+        // System.out.println(&quot;Total mapped domain instances loaded: &quot; + activeJobs.size());
+        // System.out.println(&quot;------------------------------------------&quot;);
+        
+        // // Output clean structured results extracted straight from the target JSON payload arrays
+        // activeJobs.stream().limit(3).forEach(job -&gt; {
+        //     System.out.println(&quot;Role Title : &quot; + job.getTitle());
+        //     System.out.println(&quot;Company    : &quot; + job.getCompany());
+        //     System.out.println(&quot;Location   : &quot; + job.getLocation());
+        //     System.out.println(&quot;Direct link: &quot; + job.getUrl());
+        //     System.out.println(&quot;Source Node: &quot; + job.getSource());
+        //     System.out.println();
+        // });
+    // }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

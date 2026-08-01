@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AmazonJobSearchUrlBuilder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">job-search-mcp-server</a> &gt; <a href="index.source.html" class="el_package">com.jobsearch.mcpserver.util</a> &gt; <span class="el_source">AmazonJobSearchUrlBuilder.java</span></div><h1>AmazonJobSearchUrlBuilder.java</h1><pre class="source lang-java linenums">package com.jobsearch.mcpserver.util;
+
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+public class AmazonJobSearchUrlBuilder {
+
+    private static final String BASE_URL = &quot;https://amazon.jobs/en/search.json&quot;;
+
+    // Instance variables matching the query parameters
+<span class="fc" id="L15">    private String radius = &quot;24km&quot;;</span>
+<span class="fc" id="L16">    private int offset = 0;</span>
+<span class="fc" id="L17">    private int resultLimit = 10;</span>
+<span class="fc" id="L18">    private String sort = &quot;recent&quot;;</span>
+<span class="fc" id="L19">    private String locGroupId = &quot;seattle-metro&quot;;</span>
+<span class="fc" id="L20">    private String locQuery = &quot;Greater Seattle Area, WA, United States&quot;;</span>
+<span class="fc" id="L21">    private String baseQuery = &quot;Software Development Manager&quot;;</span>
+
+    // Private constructor to force the use of the builder/fluent methods
+<span class="fc" id="L24">    public AmazonJobSearchUrlBuilder() {</span>
+<span class="fc" id="L25">    }</span>
+
+    // Fluent setter methods for configurability
+    public AmazonJobSearchUrlBuilder withRadius(String radius) {
+<span class="fc" id="L29">        this.radius = radius;</span>
+<span class="fc" id="L30">        return this;</span>
+    }
+
+    public AmazonJobSearchUrlBuilder withOffset(int offset) {
+<span class="fc" id="L34">        this.offset = offset;</span>
+<span class="fc" id="L35">        return this;</span>
+    }
+
+    public AmazonJobSearchUrlBuilder withResultLimit(int resultLimit) {
+<span class="fc" id="L39">        this.resultLimit = resultLimit;</span>
+<span class="fc" id="L40">        return this;</span>
+    }
+
+    public AmazonJobSearchUrlBuilder withSort(String sort) {
+<span class="fc" id="L44">        this.sort = sort;</span>
+<span class="fc" id="L45">        return this;</span>
+    }
+
+    public AmazonJobSearchUrlBuilder withLocGroupId(String locGroupId) {
+<span class="fc" id="L49">        this.locGroupId = locGroupId;</span>
+<span class="fc" id="L50">        return this;</span>
+    }
+
+    public AmazonJobSearchUrlBuilder withLocQuery(String locQuery) {
+<span class="fc" id="L54">        this.locQuery = locQuery;</span>
+<span class="fc" id="L55">        return this;</span>
+    }
+
+    public AmazonJobSearchUrlBuilder withBaseQuery(String baseQuery) {
+<span class="fc" id="L59">        this.baseQuery = baseQuery;</span>
+<span class="fc" id="L60">        return this;</span>
+    }
+
+    /**
+     * Builds the final URL string with safely encoded query parameters.
+     */
+    public String build() {
+<span class="fc" id="L67">        Map&lt;String, String&gt; params = new LinkedHashMap&lt;&gt;();</span>
+<span class="fc" id="L68">        params.put(&quot;radius&quot;, this.radius);</span>
+<span class="fc" id="L69">        params.put(&quot;offset&quot;, String.valueOf(this.offset));</span>
+<span class="fc" id="L70">        params.put(&quot;result_limit&quot;, String.valueOf(this.resultLimit));</span>
+<span class="fc" id="L71">        params.put(&quot;sort&quot;, this.sort);</span>
+<span class="fc" id="L72">        params.put(&quot;loc_group_id&quot;, this.locGroupId);</span>
+<span class="fc" id="L73">        params.put(&quot;loc_query&quot;, this.locQuery);</span>
+<span class="fc" id="L74">        params.put(&quot;base_query&quot;, this.baseQuery);</span>
+
+        // Map the parameters to a &quot;key=value&quot; format and encode the values safely
+<span class="fc" id="L77">        String queryString = params.entrySet().stream()</span>
+<span class="fc" id="L78">                .map(entry -&gt; entry.getKey() + &quot;=&quot; + URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8))</span>
+<span class="fc" id="L79">                .collect(Collectors.joining(&quot;&amp;&quot;));</span>
+
+<span class="fc" id="L81">        return BASE_URL + &quot;?&quot; + queryString;</span>
+    }
+
+    /**
+     * Builds and returns a URI object instead of a raw String.
+     */
+    public URI buildURI() {
+<span class="fc" id="L88">        return URI.create(this.build());</span>
+    }
+
+    // Example Usage
+    // public static void main(String[] args) {
+    //     // 1. Generate the exact default URL you provided
+    //     AmazonJobSearchUrlBuilder defaultSearch = new AmazonJobSearchUrlBuilder();
+    //     System.out.println(&quot;Default URL:&quot;);
+    //     System.out.println(defaultSearch.build());
+    //     System.out.println();
+
+    //     // 2. Generate a custom URL modifying only a few parameters (e.g., pagination or role)
+    //     String customUrl = new AmazonJobSearchUrlBuilder()
+    //             .withBaseQuery(&quot;Senior Software Engineer&quot;)
+    //             .withOffset(25) // Next page
+    //             .withResultLimit(50)
+    //             .build();
+
+    //     System.out.println(&quot;Customized URL:&quot;);
+    //     System.out.println(customUrl);
+    // }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

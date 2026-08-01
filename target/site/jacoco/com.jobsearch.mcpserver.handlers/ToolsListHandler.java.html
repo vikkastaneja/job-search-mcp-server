@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ToolsListHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">job-search-mcp-server</a> &gt; <a href="index.source.html" class="el_package">com.jobsearch.mcpserver.handlers</a> &gt; <span class="el_source">ToolsListHandler.java</span></div><h1>ToolsListHandler.java</h1><pre class="source lang-java linenums">package com.jobsearch.mcpserver.handlers;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.jobsearch.mcpserver.protocol.JsonRpcRequest;
+
+<span class="nc" id="L9">public class ToolsListHandler extends BaseHandler {</span>
+    @Override
+    protected String getResponse(JsonRpcRequest request) {
+        /*
+        {
+            &quot;jsonrpc&quot; : &quot;2.0&quot;,
+            &quot;id&quot; : 123,
+            &quot;result&quot; : {
+                &quot;tools&quot; : [ {
+                    &quot;name&quot; : &quot;search_jobs&quot;,
+                    &quot;description&quot; : &quot;Searches for jobs matching a query across multiple job boards. Returns raw listings — Claude should filter for relevance.&quot;,
+                        &quot;inputSchema&quot; : {
+                            &quot;type&quot; : &quot;object&quot;,
+                            &quot;properties&quot; : {
+                                &quot;query&quot; : {
+                                    &quot;type&quot; : &quot;string&quot;,
+                                    &quot;description&quot; : &quot;Job title or keywords to search for&quot;
+                            }
+                            },
+                            &quot;required&quot; : [ &quot;query&quot; ]
+                        }
+                } ]
+            }
+            }
+         */
+<span class="nc bnc" id="L34" title="All 2 branches missed.">        int requestId = request.getId() instanceof Integer ? (Integer) request.getId() : 1; // Default to 1 if not provided </span>
+
+<span class="nc" id="L36">        JsonNodeFactory factory = JsonNodeFactory.instance;</span>
+<span class="nc" id="L37">        ObjectMapper mapper = new ObjectMapper();</span>
+
+        // 1. Build &quot;properties&quot;: { &quot;query&quot;: { &quot;type&quot;: &quot;string&quot;, &quot;description&quot;: &quot;...&quot; } }
+<span class="nc" id="L40">        ObjectNode queryProp = factory.objectNode()</span>
+<span class="nc" id="L41">                .put(&quot;type&quot;, &quot;string&quot;)</span>
+<span class="nc" id="L42">                .put(&quot;description&quot;, &quot;Job title or keywords to search for&quot;);</span>
+
+<span class="nc" id="L44">        ObjectNode properties = factory.objectNode();</span>
+<span class="nc" id="L45">        properties.set(&quot;query&quot;, queryProp);</span>
+
+        // 2. Build &quot;required&quot;: [&quot;query&quot;]
+<span class="nc" id="L48">        ArrayNode requiredFields = factory.arrayNode()</span>
+<span class="nc" id="L49">                .add(&quot;query&quot;);</span>
+
+        // 3. Build &quot;inputSchema&quot;: { &quot;type&quot;: &quot;object&quot;, &quot;properties&quot;: ..., &quot;required&quot;: ... }
+<span class="nc" id="L52">        ObjectNode inputSchema = factory.objectNode()</span>
+<span class="nc" id="L53">                .put(&quot;type&quot;, &quot;object&quot;);</span>
+<span class="nc" id="L54">        inputSchema.set(&quot;properties&quot;, properties);</span>
+<span class="nc" id="L55">        inputSchema.set(&quot;required&quot;, requiredFields);</span>
+
+        // 4. Build the specific tool object
+<span class="nc" id="L58">        ObjectNode searchJobsTool = factory.objectNode()</span>
+<span class="nc" id="L59">                .put(&quot;name&quot;, &quot;search_jobs&quot;)</span>
+<span class="nc" id="L60">                .put(&quot;description&quot;, &quot;Searches for jobs matching a query across multiple job boards. Returns raw listings — Claude should filter for relevance.&quot;);</span>
+<span class="nc" id="L61">        searchJobsTool.set(&quot;inputSchema&quot;, inputSchema);</span>
+
+        // 5. Build &quot;tools&quot;: [...] array and add the tool
+<span class="nc" id="L64">        ArrayNode toolsList = factory.arrayNode();</span>
+<span class="nc" id="L65">        toolsList.add(searchJobsTool);</span>
+
+        // 6. Build &quot;result&quot;: { &quot;tools&quot;: [...] }
+<span class="nc" id="L68">        ObjectNode result = factory.objectNode();</span>
+<span class="nc" id="L69">        result.set(&quot;tools&quot;, toolsList);</span>
+
+        // 7. Build the root JSON object
+<span class="nc" id="L72">        ObjectNode root = factory.objectNode()</span>
+<span class="nc" id="L73">                .put(&quot;jsonrpc&quot;, &quot;2.0&quot;)</span>
+<span class="nc" id="L74">                .put(&quot;id&quot;, requestId);</span>
+<span class="nc" id="L75">        root.set(&quot;result&quot;, result);</span>
+
+        // 8. Serialize to String (Pretty Printed)
+<span class="nc" id="L78">        String jsonString = null;</span>
+        try {
+<span class="nc" id="L80">            jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(root);</span>
+<span class="nc" id="L81">        } catch (Exception e) {</span>
+<span class="nc" id="L82">            e.printStackTrace();</span>
+<span class="nc" id="L83">        }</span>
+
+<span class="nc" id="L85">        System.out.println(jsonString);</span>
+<span class="nc" id="L86">        return jsonString;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>
