@@ -1,0 +1,4 @@
+com\jobsearch\mcpserver\util\JsonUtilTest$TestClass.class
+com\jobsearch\mcpserver\util\AmazonJobSearchUrlBuilderTest.class
+com\jobsearch\mcpserver\util\AmazonJobParserTest.class
+com\jobsearch\mcpserver\util\JsonUtilTest.class
