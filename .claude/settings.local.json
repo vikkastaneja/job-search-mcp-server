@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__job-search__search_jobs",
+      "Bash(echo \"=== exit code: $? ===\")",
+      "Bash(java -version)",
+      "Bash(mvn -version)",
+      "Read(//home/adam/.claude/**)",
+      "Bash(find / -maxdepth 4 -iname \"*.claude*\" -type d)",
+      "Bash(find / -maxdepth 6 -iname \"solutions\" -type d)",
+      "Read(//mnt/c/Users/Adam/**)",
+      "WebSearch",
+      "WebFetch(domain:www.baeldung.com)",
+      "Bash(xargs -I{} sh -c 'echo ==={}===; cat {}')"
+    ]
+  }
+}

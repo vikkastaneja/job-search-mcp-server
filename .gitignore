@@ -1,0 +1,7 @@
+target/
+dependency-reduced-pom.xml
+*.class
+*.jar
+*.war
+*.ear
+.mvn/maven.config

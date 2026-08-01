@@ -46,7 +46,7 @@ public class AmazonJobParser {
                     
                     // Construct the absolute canonical job listing URL
                     String jobPath = getTextNodeValue(jobNode, "job_path");
-                    String absoluteUrl = jobPath.isEmpty() ? "" : SITE_BASE_URL + jobPath;
+                    String absoluteUrl = jobPath.isEmpty() ? "" : SITE_BASE_URL + "/" + jobPath;
 
                     // Instantiating the clean target object
                     JobListing listing = new JobListing(
@@ -75,23 +75,5 @@ public class AmazonJobParser {
     private static String getTextNodeValue(JsonNode node, String fieldName) {
         JsonNode field = node.get(fieldName);
         return (field != null && !field.isNull()) ? field.asText() : "";
-    }
-
-    // Example verification block matching your provided payload snippet
-    public static void main(String[] args) {
-        String sampleJson = "{\"jobs\": [{"
-                + "\"title\": \"Software Development Manager (SDM), Commerce, Twitch\","
-                + "\"company_name\": \"Twitch Interactive, Inc. - D48\","
-                + "\"normalized_location\": \"San Francisco, California, USA\","
-                + "\"description_short\": \"If you are interested in this position, please apply on Twitch's Career site...\","
-                + "\"job_path\": \"/en/jobs/10448357/software-development-manager-sdm-commerce-twitch\""
-                + "}]}";
-
-        List<JobListing> parsedJobs = AmazonJobParser.parse(sampleJson);
-        for (JobListing job : parsedJobs) {
-            System.out.println("Parsed Job: " + job.getTitle());
-            System.out.println("Absolute URL: " + job.getUrl());
-            System.out.println("Location: " + job.getLocation());
-        }
     }
 }

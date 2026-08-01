@@ -1,0 +1,20 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Debug McpServer",
+      "request": "launch",
+      "mainClass": "com.jobsearch.mcpserver.McpServer",
+      "projectName": "job-search-mcp-server",
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "java",
+      "name": "Attach to JVM (5005)",
+      "request": "attach",
+      "hostName": "localhost",
+      "port": 5005
+    }
+  ]
+}
