@@ -16,6 +16,7 @@ import com.jobsearch.mcpserver.transport.SessionStore;
 
 public class McpServer {
     public static void main(String[] args) throws Exception {
+        int port = Integer.parseInt(System.getenv().getOrDefault("PORT", "8080"));
         HttpClient httpClient = HttpClient.newHttpClient();
         AmazonPlugin amazonPlugin = new AmazonPlugin(httpClient);
         SearchJobsTool searchJobsTool = new SearchJobsTool(List.of(amazonPlugin));
@@ -32,7 +33,7 @@ public class McpServer {
             System.out.println("Assigned session ID: " + sessionId);
             
             try {
-                client.sendEvent("endpoint", "http://localhost:8080/message?sessionId=" + sessionId);
+                client.sendEvent("endpoint", "http://localhost:" + port + "/message?sessionId=" + sessionId);
                 System.out.println("Sent initial event with endpoint URL");
             } catch (Exception e) {
                 System.out.println("Error sending initial event: " + e.getMessage());
@@ -62,6 +63,6 @@ public class McpServer {
             ctx.status(isNotification ? 202 : 200); // 202 Accepted for notifications, 200 OK for regular requests
         });
 
-        app.start(8080);
+        app.start(port);
     }
 }
