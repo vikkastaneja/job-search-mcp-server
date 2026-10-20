@@ -24,3 +24,13 @@ jobs:
 
     - name: Run Tests
       run: mvn test
+
+    - name: Audit Vulnerabilities
+      uses: docker/scout-action@v1
+      with:
+        command: cves
+        image: job-search-mcp-server:v7
+        # Only block / fail your pipeline on actionable, fixable application flaws
+        exit-code: true
+        only-severities: critical,high
+        
