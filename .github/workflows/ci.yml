@@ -25,6 +25,12 @@ jobs:
     - name: Run Tests
       run: mvn test
 
+    - name: Log into Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_HUB_USER }}
+        password: ${{ secrets.DOCKER_HUB_PAT }}
+
     - name: Audit Vulnerabilities
       uses: docker/scout-action@v1
       with:
@@ -33,4 +39,3 @@ jobs:
         # Only block / fail your pipeline on actionable, fixable application flaws
         exit-code: true
         only-severities: critical,high
-        
